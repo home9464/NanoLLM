@@ -120,10 +120,11 @@ for _ in range(3):
     # initialise a wandb run
     wandb.init(
         project="NanoLLM",
+        name=f"experiment_{_}", # run name
         config={
             "epochs": 5,
             "batch_size": 128,
-            "lr": 1e-3,
+            "lr": 3e-4,
             "dropout": random.uniform(0.01, 0.80),
         },
     )
@@ -150,13 +151,11 @@ for _ in range(3):
         model.train()
         for step, (images, labels) in enumerate(train_dl):
             images, labels = images.to(device), labels.to(device)
-
             outputs = model(images)
             train_loss = loss_func(outputs, labels)
             optimizer.zero_grad()
             train_loss.backward()
             optimizer.step()
-
             example_ct += len(images)
             metrics = {
                 "train/train_loss": train_loss,
