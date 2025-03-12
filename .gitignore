@@ -3,3 +3,4 @@ dataset/*
 MNIST/*
 wandb/*
 *.pt
+out/*
