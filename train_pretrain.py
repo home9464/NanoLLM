@@ -98,7 +98,7 @@ def train_epoch(epoch, wandb):
 def init_model(lm_config):
     tokenizer = AutoTokenizer.from_pretrained('./model/minimind_tokenizer')
     model = MiniMindLM(lm_config).to(args.device)
-    Logger(f'LLM总参数量：{sum(p.numel() for p in model.parameters() if p.requires_grad) / 1e6:.3f} 百万')
+    Logger(f'LLM parameters: {sum(p.numel() for p in model.parameters() if p.requires_grad) / 1e6:.3f} million')
     return model, tokenizer
 
 
@@ -118,8 +118,7 @@ def init_distributed_mode():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="NanoLLM Pretraining")
     parser.add_argument("--out_dir", type=str, default="out")
-    # 若要以最快速度实现zero则epochs设置为1轮；否则应当利用有限的数据训练2~6个epochs。
-    parser.add_argument("--epochs", type=int, default=1)
+    parser.add_argument("--epochs", type=int, default=1)  # 2-6
     parser.add_argument("--batch_size", type=int, default=32)
     parser.add_argument("--learning_rate", type=float, default=5e-4)
     parser.add_argument("--device", type=str, default="cuda:0" if torch.cuda.is_available() else "cpu")

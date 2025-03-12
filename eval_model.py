@@ -90,7 +90,6 @@ def get_prompt_datas(args):
     return prompt_datas
 
 
-# 设置可复现的随机种子
 def setup_seed(seed):
     random.seed(seed)
     np.random.seed(seed)
