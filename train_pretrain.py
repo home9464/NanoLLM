@@ -141,7 +141,7 @@ if __name__ == "__main__":
     parser.add_argument("--data_path", type=str, default="./dataset/pretrain_hq.jsonl")
     args = parser.parse_args()
     print(args)
-    
+
     lm_config = LMConfig(dim=args.dim, n_layers=args.n_layers, max_seq_len=args.max_seq_len, use_moe=args.use_moe)
     args.save_dir = os.path.join(args.out_dir)
     os.makedirs(args.save_dir, exist_ok=True)
@@ -152,7 +152,7 @@ if __name__ == "__main__":
 
     args.wandb_run_name = f"MiniMind-Pretrain-Epoch-{args.epochs}-BatchSize-{args.batch_size}-LearningRate-{args.learning_rate}"
 
-    ctx = nullcontext() if device_type == "cpu" else torch.cuda.amp.autocast()
+    ctx = nullcontext() if device_type == "cpu" else torch.amp.autocast('cuda')
 
     ddp = int(os.environ.get("RANK", -1)) != -1  # is this a ddp run?
     ddp_local_rank, DEVICE = 0, "cuda:0"

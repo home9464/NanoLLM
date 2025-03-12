@@ -1,0 +1,14 @@
+{
+  "os": "macOS-15.3.1-arm64-arm-64bit",
+  "python": "CPython 3.10.9",
+  "startedAt": "2025-03-12T05:13:25.124278Z",
+  "program": "<python with no main file>",
+  "git": {
+    "remote": "git@github.com:home9464/NanoLLM.git",
+    "commit": "df5dde6bf5ad60ca6b0b1307cb59087ad5eb882f"
+  },
+  "email": "home9464@gmail.com",
+  "root": "/Users/yingsun/NanoLLM",
+  "host": "m-yingsun-5ced59",
+  "executable": "/Users/yingsun/Library/Caches/pypoetry/virtualenvs/pgo-npc-9XK8Woi6-py3.10/bin/python"
+}

@@ -1,0 +1,15 @@
+{"time":"2025-03-11T22:13:07.973306-07:00","level":"INFO","msg":"stream: starting","core version":"0.19.8","symlink path":"/Users/yingsun/NanoLLM/wandb/run-20250311_221307-50du3kwo/logs/debug-core.log"}
+{"time":"2025-03-11T22:13:08.38259-07:00","level":"INFO","msg":"created new stream","id":"50du3kwo"}
+{"time":"2025-03-11T22:13:08.38267-07:00","level":"INFO","msg":"stream: started","id":"50du3kwo"}
+{"time":"2025-03-11T22:13:08.382741-07:00","level":"INFO","msg":"writer: Do: started","stream_id":"50du3kwo"}
+{"time":"2025-03-11T22:13:08.382764-07:00","level":"INFO","msg":"sender: started","stream_id":"50du3kwo"}
+{"time":"2025-03-11T22:13:08.383004-07:00","level":"INFO","msg":"handler: started","stream_id":"50du3kwo"}
+{"time":"2025-03-11T22:13:08.674134-07:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-03-11T22:13:25.952534-07:00","level":"INFO","msg":"stream: closing","id":"50du3kwo"}
+{"time":"2025-03-11T22:13:25.952577-07:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-03-11T22:13:25.952962-07:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-03-11T22:13:26.375972-07:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-03-11T22:13:26.518709-07:00","level":"INFO","msg":"handler: closed","stream_id":"50du3kwo"}
+{"time":"2025-03-11T22:13:26.518885-07:00","level":"INFO","msg":"writer: Close: closed","stream_id":"50du3kwo"}
+{"time":"2025-03-11T22:13:26.519473-07:00","level":"INFO","msg":"sender: closed","stream_id":"50du3kwo"}
+{"time":"2025-03-11T22:13:26.519505-07:00","level":"INFO","msg":"stream: closed","id":"50du3kwo"}

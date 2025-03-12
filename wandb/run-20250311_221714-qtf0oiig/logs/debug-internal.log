@@ -1,0 +1,16 @@
+{"time":"2025-03-11T22:17:14.760783-07:00","level":"INFO","msg":"stream: starting","core version":"0.19.8","symlink path":"/Users/yingsun/NanoLLM/wandb/run-20250311_221714-qtf0oiig/logs/debug-core.log"}
+{"time":"2025-03-11T22:17:14.870626-07:00","level":"INFO","msg":"created new stream","id":"qtf0oiig"}
+{"time":"2025-03-11T22:17:14.8707-07:00","level":"INFO","msg":"stream: started","id":"qtf0oiig"}
+{"time":"2025-03-11T22:17:14.870701-07:00","level":"INFO","msg":"handler: started","stream_id":"qtf0oiig"}
+{"time":"2025-03-11T22:17:14.870722-07:00","level":"INFO","msg":"sender: started","stream_id":"qtf0oiig"}
+{"time":"2025-03-11T22:17:14.870744-07:00","level":"INFO","msg":"writer: Do: started","stream_id":"qtf0oiig"}
+{"time":"2025-03-11T22:17:15.01673-07:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-03-11T22:17:20.661782-07:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-03-11T22:17:20.662131-07:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-03-11T22:17:21.670385-07:00","level":"INFO","msg":"handler: operation stats","stats":{"operations":[{"desc":"uploading artifact my_mnist_model","runtime_seconds":3.672348167},{"desc":"uploading artifact run-qtf0oiig-predictions_table","runtime_seconds":1.197997042},{"desc":"uploading artifact my_mnist_model","runtime_seconds":1.010128}],"total_operations":3}}
+{"time":"2025-03-11T22:17:23.803142-07:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-03-11T22:17:23.951099-07:00","level":"INFO","msg":"stream: closing","id":"qtf0oiig"}
+{"time":"2025-03-11T22:17:23.95112-07:00","level":"INFO","msg":"handler: closed","stream_id":"qtf0oiig"}
+{"time":"2025-03-11T22:17:23.951126-07:00","level":"INFO","msg":"writer: Close: closed","stream_id":"qtf0oiig"}
+{"time":"2025-03-11T22:17:23.951141-07:00","level":"INFO","msg":"sender: closed","stream_id":"qtf0oiig"}
+{"time":"2025-03-11T22:17:23.9513-07:00","level":"INFO","msg":"stream: closed","id":"qtf0oiig"}

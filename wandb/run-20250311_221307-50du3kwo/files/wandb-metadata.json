@@ -1,0 +1,43 @@
+{
+  "os": "macOS-15.3.1-arm64-arm-64bit",
+  "python": "CPython 3.10.9",
+  "startedAt": "2025-03-12T05:13:07.971531Z",
+  "program": "/Users/yingsun/NanoLLM/test_wandb.py",
+  "codePath": "test_wandb.py",
+  "git": {
+    "remote": "git@github.com:home9464/NanoLLM.git",
+    "commit": "df5dde6bf5ad60ca6b0b1307cb59087ad5eb882f"
+  },
+  "email": "home9464@gmail.com",
+  "root": "/Users/yingsun/NanoLLM",
+  "host": "m-yingsun-5ced59",
+  "executable": "/Users/yingsun/Library/Caches/pypoetry/virtualenvs/pgo-npc-9XK8Woi6-py3.10/bin/python",
+  "codePathLocal": "test_wandb.py",
+  "cpu_count": 10,
+  "cpu_count_logical": 10,
+  "disk": {
+    "/": {
+      "total": "994662584320",
+      "used": "482811760640"
+    },
+    "/System/Volumes/Data": {
+      "total": "994662584320",
+      "used": "482811760640"
+    }
+  },
+  "memory": {
+    "total": "68719476736"
+  },
+  "cpu": {
+    "count": 10,
+    "countLogical": 10
+  },
+  "apple": {
+    "name": "Apple M1 Max",
+    "ecpuCores": 2,
+    "pcpuCores": 8,
+    "gpuCores": 24,
+    "memoryGb": 64,
+    "ramTotalBytes": "68719476736"
+  }
+}
