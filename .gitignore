@@ -1,6 +1,6 @@
-dataset/*
+*.pt
 *.pyc
 MNIST/*
 wandb/*
-*.pt
 out/*
+dataset/*
