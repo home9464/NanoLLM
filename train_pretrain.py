@@ -35,6 +35,7 @@ def train_epoch(epoch, wandb):
     loss_fct = nn.CrossEntropyLoss(reduction='none')
     start_time = time.time()
     for step, (X, Y, loss_mask) in enumerate(train_loader):
+        print(f'step: {step}')
         X = X.to(args.device)
         Y = Y.to(args.device)
         loss_mask = loss_mask.to(args.device)
@@ -61,7 +62,6 @@ def train_epoch(epoch, wandb):
 
             scaler.step(optimizer)
             scaler.update()
-
             optimizer.zero_grad(set_to_none=True)
 
         if step % args.log_interval == 0:
@@ -119,8 +119,8 @@ def init_distributed_mode():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="NanoLLM Pretraining")
     parser.add_argument("--out_dir", type=str, default="out")
-    parser.add_argument("--epochs", type=int, default=1)  # 2-6
-    parser.add_argument("--batch_size", type=int, default=32)
+    parser.add_argument("--epochs", type=int, default=2)  # 2-6
+    parser.add_argument("--batch_size", type=int, default=8)
     parser.add_argument("--learning_rate", type=float, default=5e-4)
     parser.add_argument("--device", type=str, default="cuda:0" if torch.cuda.is_available() else "cpu")
     parser.add_argument("--dtype", type=str, default="bfloat16")
@@ -128,7 +128,7 @@ if __name__ == "__main__":
     parser.add_argument("--wandb_project", type=str, default="NanoLLM")
     parser.add_argument("--num_workers", type=int, default=1)
     parser.add_argument("--ddp", action="store_true")
-    parser.add_argument("--accumulation_steps", type=int, default=8)
+    parser.add_argument("--accumulation_steps", type=int, default=32)
     parser.add_argument("--grad_clip", type=float, default=1.0)
     parser.add_argument("--warmup_iters", type=int, default=0)
     parser.add_argument("--log_interval", type=int, default=100)
@@ -139,7 +139,8 @@ if __name__ == "__main__":
     parser.add_argument('--max_seq_len', default=512, type=int)
     parser.add_argument('--use_moe', default=False, type=bool)
     #parser.add_argument("--data_path", type=str, default="./dataset/pretrain_hq.jsonl")
-    parser.add_argument("--data_path", type=str, default="./dataset/pretrain_100.jsonl")
+    #parser.add_argument("--data_path", type=str, default="./dataset/pretrain_100.jsonl")
+    parser.add_argument("--data_path", type=str, default="./dataset/openwebtext-10k.jsonl")
     args = parser.parse_args()
     print(args)
 

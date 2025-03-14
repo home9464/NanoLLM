@@ -1,3 +1,6 @@
+"""SFT on pretrained model
+
+"""
 import os
 import platform
 import argparse
@@ -58,10 +61,8 @@ def train_epoch(epoch, wandb):
         if (step + 1) % args.accumulation_steps == 0:
             scaler.unscale_(optimizer)
             torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
-
             scaler.step(optimizer)
             scaler.update()
-
             optimizer.zero_grad(set_to_none=True)
 
         if step % args.log_interval == 0:
@@ -75,7 +76,6 @@ def train_epoch(epoch, wandb):
                     loss.item(),
                     optimizer.param_groups[-1]['lr'],
                     spend_time / (step + 1) * iter_per_epoch // 60 - spend_time // 60))
-
             if (wandb is not None) and (not ddp or dist.get_rank() == 0):
                 wandb.log({"loss": loss,
                            "lr": optimizer.param_groups[-1]['lr'],
@@ -85,24 +85,22 @@ def train_epoch(epoch, wandb):
             model.eval()
             moe_path = '_moe' if lm_config.use_moe else ''
             ckp = f'{args.save_dir}/full_sft_{lm_config.dim}{moe_path}.pth'
-
             if isinstance(model, torch.nn.parallel.DistributedDataParallel):
                 state_dict = model.module.state_dict()
             else:
                 state_dict = model.state_dict()
-
             torch.save(state_dict, ckp)
             model.train()
 
 
 def init_model(lm_config):
-    tokenizer = AutoTokenizer.from_pretrained('./model/minimind_tokenizer')
+    tokenizer = AutoTokenizer.from_pretrained('./model/nanollm_tokenizer')
     model = MiniMindLM(lm_config)
     moe_path = '_moe' if lm_config.use_moe else ''
     ckp = f'./out/pretrain_{lm_config.dim}{moe_path}.pth'
     state_dict = torch.load(ckp, map_location=args.device)
     model.load_state_dict(state_dict, strict=False)
-    Logger(f'LLM总参数量：{sum(p.numel() for p in model.parameters() if p.requires_grad) / 1e6:.3f} 百万')
+    Logger(f'Total parameters: {sum(p.numel() for p in model.parameters() if p.requires_grad) / 1e6:.3f} million')
     model = model.to(args.device)
     return model, tokenizer
 
@@ -120,7 +118,10 @@ def init_distributed_mode():
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="MiniMind Full SFT")
+    """uv run train_full_sft.py --use_wandb
+    uv run eval_model.py --model 1
+    """
+    parser = argparse.ArgumentParser(description="NanoLLM Full SFT")
     parser.add_argument("--out_dir", type=str, default="out")
     parser.add_argument("--epochs", type=int, default=1)
     parser.add_argument("--batch_size", type=int, default=32)
@@ -128,7 +129,7 @@ if __name__ == "__main__":
     parser.add_argument("--device", type=str, default="cuda:0" if torch.cuda.is_available() else "cpu")
     parser.add_argument("--dtype", type=str, default="bfloat16")
     parser.add_argument("--use_wandb", action="store_true")
-    parser.add_argument("--wandb_project", type=str, default="MiniMind-Full-SFT")
+    parser.add_argument("--wandb_project", type=str, default="NanoLLM")
     parser.add_argument("--num_workers", type=int, default=1)
     parser.add_argument("--ddp", action="store_true")
     parser.add_argument("--accumulation_steps", type=int, default=1)
@@ -153,7 +154,7 @@ if __name__ == "__main__":
     torch.manual_seed(1337)
     device_type = "cuda" if "cuda" in args.device else "cpu"
 
-    args.wandb_run_name = f"MiniMind-Full-SFT-Epoch-{args.epochs}-BatchSize-{args.batch_size}-LearningRate-{args.learning_rate}"
+    args.wandb_run_name = f"Full-SFT-Epoch-{args.epochs}-BatchSize-{args.batch_size}-LearningRate-{args.learning_rate}"
 
     ctx = nullcontext() if device_type == "cpu" else torch.cuda.amp.autocast()
     ddp = int(os.environ.get("RANK", -1)) != -1  # is this a ddp run?

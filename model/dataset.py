@@ -75,7 +75,6 @@ class SFTDataset(Dataset):
         return samples
 
     def _create_chat_prompt(self, conversations):
-        """构建符合ChatML格式的对话"""
         messages = []
         for i, turn in enumerate(conversations):
             role = 'user' if i % 2 == 0 else 'assistant'
