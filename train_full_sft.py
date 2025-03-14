@@ -116,7 +116,6 @@ def init_distributed_mode():
     DEVICE = f"cuda:{ddp_local_rank}"
     torch.cuda.set_device(DEVICE)
 
-
 if __name__ == "__main__":
     """uv run train_full_sft.py --use_wandb
     uv run eval_model.py --model 1

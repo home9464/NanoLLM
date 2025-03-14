@@ -66,6 +66,18 @@ class SFTDataset(Dataset):
     def __len__(self):
         return len(self.samples)
 
+    def __getitem__(self, index):
+        sample = self.samples[index]
+        prompt = self._create_chat_prompt(sample['conversations'])
+        input_ids = self.tokenizer(prompt).input_ids[:self.max_length]
+        input_ids += [self.tokenizer.pad_token_id] * (self.max_length - len(input_ids))
+        loss_mask = self._generate_loss_mask(input_ids)
+        X = torch.tensor(input_ids[:-1], dtype=torch.long)
+        Y = torch.tensor(input_ids[1:], dtype=torch.long)
+        loss_mask = torch.tensor(loss_mask[1:], dtype=torch.long)  # 对齐预测位置
+
+        return X, Y, loss_mask
+
     def load_data(self, path):
         samples = []
         with open(path, 'r', encoding='utf-8') as f:
@@ -103,22 +115,6 @@ class SFTDataset(Dataset):
                 i += 1
         return loss_mask
 
-    def __getitem__(self, index):
-        sample = self.samples[index]
-        # 构建对话提示
-        prompt = self._create_chat_prompt(sample['conversations'])
-        input_ids = self.tokenizer(prompt).input_ids[:self.max_length]
-        input_ids += [self.tokenizer.pad_token_id] * (self.max_length - len(input_ids))
-
-        # 生成动态损失掩码
-        loss_mask = self._generate_loss_mask(input_ids)
-
-        # 构建训练数据
-        X = torch.tensor(input_ids[:-1], dtype=torch.long)
-        Y = torch.tensor(input_ids[1:], dtype=torch.long)
-        loss_mask = torch.tensor(loss_mask[1:], dtype=torch.long)  # 对齐预测位置
-
-        return X, Y, loss_mask
 
 
 class DPODataset(Dataset):

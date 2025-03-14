@@ -107,16 +107,20 @@ def init_distributed_mode():
     global ddp_local_rank, DEVICE
 
     dist.init_process_group(backend="nccl")
+    # torchrun automatically sets the RANK and WORLD_SIZE environment variables.
     ddp_rank = int(os.environ["RANK"])
     ddp_local_rank = int(os.environ["LOCAL_RANK"])
-    ddp_world_size = int(os.environ["WORLD_SIZE"])
+    ddp_world_size = int(os.environ["WORLD_SIZE"]) # number of GPUs
     DEVICE = f"cuda:{ddp_local_rank}"
     torch.cuda.set_device(DEVICE)
 
+# DDP mode: N CPUs in 1 machine
+# torchrun --nproc_per_node 2 train-pretrain.py
 
-# torchrun --nproc_per_node 2 1-pretrain.py
-# 
 if __name__ == "__main__":
+    """uv run train_pretrain.py --use_wandb
+    uv run eval_model.py --model 0
+    """
     parser = argparse.ArgumentParser(description="NanoLLM Pretraining")
     parser.add_argument("--out_dir", type=str, default="out")
     parser.add_argument("--epochs", type=int, default=2)  # 2-6
