@@ -1,4 +1,7 @@
-dataset/*
+MNIST/
+wandb/
+out/
+dataset/
+*.pt
+*.pth
 *.pyc
-MNIST/*
-wandb/*
