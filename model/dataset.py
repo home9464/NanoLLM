@@ -14,6 +14,8 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
 class PretrainDataset(Dataset):
+    """read JSONL file
+    """
     def __init__(self, data_path, tokenizer, max_length=512):
         super().__init__()
         self.tokenizer = tokenizer

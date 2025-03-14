@@ -1,6 +1,4 @@
 """
-annotate and explain the code with examples like I have very few background knowledge
-
 """
 import math
 import struct

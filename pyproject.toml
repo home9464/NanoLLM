@@ -10,11 +10,7 @@ dependencies = [
     "openai-agents>=0.0.4",
     "pandas>=2.2.3",
     "scikit-learn>=1.6.1",
-<<<<<<< HEAD
     "torch>=2.6.0",
-=======
->>>>>>> f1e970dacbf6e6b49fb376b9e351ce0cd68bfc1c
-    "torchvision>=0.21.0",
     "transformers>=4.49.0",
     "trl>=0.15.2",
     "wandb>=0.19.8",

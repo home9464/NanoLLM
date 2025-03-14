@@ -3,7 +3,7 @@ from typing import List
 
 
 class LMConfig(PretrainedConfig):
-    model_type = "minimind"
+    model_type = "nanollm"
 
     def __init__(
             self,
@@ -51,11 +51,11 @@ class LMConfig(PretrainedConfig):
         # When use_moe is false, the following is invalid
         ####################################################
         self.use_moe = use_moe
-        self.num_experts_per_tok = num_experts_per_tok  # 每个token选择的专家数量
-        self.n_routed_experts = n_routed_experts  # 总的专家数量
-        self.n_shared_experts = n_shared_experts  # 共享专家
-        self.scoring_func = scoring_func  # 评分函数，默认为'softmax'
+        self.num_experts_per_tok = num_experts_per_tok  # num experts per token
+        self.n_routed_experts = n_routed_experts  # total experts
+        self.n_shared_experts = n_shared_experts  # shared experts
+        self.scoring_func = scoring_func  # 
         self.aux_loss_alpha = aux_loss_alpha  # 辅助损失的alpha参数
-        self.seq_aux = seq_aux  # 是否在序列级别上计算辅助损失
-        self.norm_topk_prob = norm_topk_prob  # 是否标准化top-k概率
+        self.seq_aux = seq_aux  # if calc aux loss on sequence
+        self.norm_topk_prob = norm_topk_prob  # if norm top-k
         super().__init__(**kwargs)

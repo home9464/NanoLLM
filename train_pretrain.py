@@ -96,7 +96,7 @@ def train_epoch(epoch, wandb):
 
 
 def init_model(lm_config):
-    tokenizer = AutoTokenizer.from_pretrained('./model/minimind_tokenizer')
+    tokenizer = AutoTokenizer.from_pretrained('./model/nanollm_tokenizer')
     model = MiniMindLM(lm_config).to(args.device)
     Logger(f'LLM parameters: {sum(p.numel() for p in model.parameters() if p.requires_grad) / 1e6:.3f} million')
     return model, tokenizer
@@ -115,6 +115,7 @@ def init_distributed_mode():
 
 
 # torchrun --nproc_per_node 2 1-pretrain.py
+# 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="NanoLLM Pretraining")
     parser.add_argument("--out_dir", type=str, default="out")
@@ -137,7 +138,8 @@ if __name__ == "__main__":
     parser.add_argument('--n_layers', default=8, type=int)
     parser.add_argument('--max_seq_len', default=512, type=int)
     parser.add_argument('--use_moe', default=False, type=bool)
-    parser.add_argument("--data_path", type=str, default="./dataset/pretrain_hq.jsonl")
+    #parser.add_argument("--data_path", type=str, default="./dataset/pretrain_hq.jsonl")
+    parser.add_argument("--data_path", type=str, default="./dataset/pretrain_100.jsonl")
     args = parser.parse_args()
     print(args)
 
