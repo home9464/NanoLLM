@@ -5,6 +5,7 @@ import time
 import math
 import warnings
 import pandas as pd
+
 import torch
 import torch.distributed as dist
 from torch import optim, nn
@@ -21,46 +22,44 @@ from model.dataset import PretrainDataset
 
 warnings.filterwarnings('ignore')
 
-
 def Logger(content):
     if not ddp or dist.get_rank() == 0:
         print(content)
 
-
 def get_lr(current_step, total_steps, lr):
     return lr / 10 + 0.5 * lr * (1 + math.cos(math.pi * current_step / total_steps))
 
-
 def train_epoch(epoch, wandb):
+    # reduction='none' means the loss is computed per token, 
+    # allowing custom loss with loss_mask
     loss_fct = nn.CrossEntropyLoss(reduction='none')
     start_time = time.time()
     for step, (X, Y, loss_mask) in enumerate(train_loader):
-        print(f'step: {step}')
         X = X.to(args.device)
         Y = Y.to(args.device)
         loss_mask = loss_mask.to(args.device)
-
         lr = get_lr(epoch * iter_per_epoch + step, args.epochs * iter_per_epoch, args.learning_rate)
         for param_group in optimizer.param_groups:
             param_group['lr'] = lr
-
-        with ctx:
-            res = model(X)
+        with ctx:  # mixed precision context 
+            res = model(X)  # forward pass
             loss = loss_fct(
                 res.logits.view(-1, res.logits.size(-1)),
                 Y.view(-1)
-            ).view(Y.size())
+            ).view(Y.size())  # Reshape loss back to match Y
             loss = (loss * loss_mask).sum() / loss_mask.sum()
-            loss += res.aux_loss
-            loss = loss / args.accumulation_steps
-
+            loss += res.aux_loss  # Include auxiliary loss if applicable
+            loss = loss / args.accumulation_steps  # Normalize for gradient accumulation
+        # Compute gradients on the scaled loss
         scaler.scale(loss).backward()
-
         if (step + 1) % args.accumulation_steps == 0:
+            # Unscales gradients before applying them
             scaler.unscale_(optimizer)
+            # Gradient clipping
             torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
-
+            # Apply gradients if no overflow
             scaler.step(optimizer)
+            # Adjust scaling factor automatically
             scaler.update()
             optimizer.zero_grad(set_to_none=True)
 
@@ -185,7 +184,8 @@ if __name__ == "__main__":
         num_workers=args.num_workers,
         sampler=train_sampler
     )
-
+    # GradScaler scales up the loss before computing gradients and 
+    # scales them back down before updating model parameters. 
     scaler = torch.amp.GradScaler(enabled=(args.dtype in ['float16', 'bfloat16']))
     optimizer = optim.AdamW(model.parameters(), lr=args.learning_rate)
 
