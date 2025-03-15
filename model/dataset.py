@@ -46,11 +46,12 @@ class PretrainDataset(Dataset):
             return_tensors='pt'
         )
         input_ids = encoding.input_ids.squeeze()
+        # boolean mask that determines which tokens should contribute to the loss during training.
         loss_mask = (input_ids != self.tokenizer.pad_token_id)
 
-        X = torch.tensor(input_ids[:-1], dtype=torch.long)
-        Y = torch.tensor(input_ids[1:], dtype=torch.long)
-        loss_mask = torch.tensor(loss_mask[1:], dtype=torch.long)
+        X = torch.tensor(input_ids[:-1], dtype=torch.long)  # Inputs (excluding last token)
+        Y = torch.tensor(input_ids[1:], dtype=torch.long)  # Targets (excluding first token)
+        loss_mask = torch.tensor(loss_mask[1:], dtype=torch.long)  # Mask for targets
         return X, Y, loss_mask
 
 
@@ -70,6 +71,7 @@ class SFTDataset(Dataset):
         sample = self.samples[index]
         prompt = self._create_chat_prompt(sample['conversations'])
         input_ids = self.tokenizer(prompt).input_ids[:self.max_length]
+        # pad the inputs to max_length
         input_ids += [self.tokenizer.pad_token_id] * (self.max_length - len(input_ids))
         loss_mask = self._generate_loss_mask(input_ids)
         X = torch.tensor(input_ids[:-1], dtype=torch.long)
@@ -98,6 +100,13 @@ class SFTDataset(Dataset):
         )
 
     def _generate_loss_mask(self, input_ids):
+        """example: 
+        self.bos_id = [101]  # Example token for <bos>
+        self.eos_id = [102]  # Example token for <eos>
+        input_ids = [0, 0, 101, 10, 20, 30, 102, 0, 0]  # Example tokenized input
+
+        return: [0, 0, 0, 1, 1, 1, 0, 0, 0]
+        """
         loss_mask = [0] * len(input_ids)
         i = 0
         while i < len(input_ids):
@@ -108,8 +117,10 @@ class SFTDataset(Dataset):
                     if input_ids[end:end + len(self.eos_id)] == self.eos_id:
                         break
                     end += 1
+                # marks tokens inside the <bos> and <eos> range as 1, meaning they will contribute to the loss.
                 for j in range(start + 1, min(end + len(self.eos_id) + 1, self.max_length)):
                     loss_mask[j] = 1
+                # Moves i past <eos> if found.
                 i = end + len(self.eos_id) if end < len(input_ids) else len(input_ids)
             else:
                 i += 1
