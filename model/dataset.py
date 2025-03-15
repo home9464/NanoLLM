@@ -116,7 +116,6 @@ class SFTDataset(Dataset):
         return loss_mask
 
 
-
 class DPODataset(Dataset):
     def __init__(self, file_path, tokenizer, max_length=4096):
         super().__init__()

@@ -117,7 +117,9 @@ def init_distributed_mode():
     torch.cuda.set_device(DEVICE)
 
 if __name__ == "__main__":
-    """uv run train_full_sft.py --use_wandb
+    """
+    uv run train_pretrain.py --use_wandb
+    uv run train_full_sft.py --use_wandb
     uv run eval_model.py --model 1
     """
     parser = argparse.ArgumentParser(description="NanoLLM Full SFT")
