@@ -1,17 +1,16 @@
 import json
 import random
 import re
-
-import pandas as pd
-import numpy as np
-from torch.utils.data import Dataset, DataLoader
-import torch
-from sklearn.model_selection import train_test_split
 import os
 import ast
 
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
+import pandas as pd
+import numpy as np
+import torch
+from torch.utils.data import Dataset, DataLoader
+from sklearn.model_selection import train_test_split
 
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 class PretrainDataset(Dataset):
     """read JSONL file
@@ -35,9 +34,8 @@ class PretrainDataset(Dataset):
 
     def __getitem__(self, index):
         sample = self.samples[index]
-
-        # 构建输入文本
-        text = f"{self.tokenizer.bos_token}{str(sample['text'])}{self.tokenizer.eos_token}"
+        # text = f"{self.tokenizer.bos_token}{str(sample['text'])}{self.tokenizer.eos_token}"
+        text = str(sample['text'])
         encoding = self.tokenizer(
             text,
             max_length=self.max_length,
