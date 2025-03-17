@@ -18,8 +18,8 @@ random.seed(42)
 
 
 INPUT_DATA = '../dataset/pretrain_hq.jsonl'
-
 OUTPUT_TOKENIZER_DIR = "../model/nano_tokenizer"
+
 os.makedirs(OUTPUT_TOKENIZER_DIR, exist_ok=True)
 
 def train_tokenizer():
