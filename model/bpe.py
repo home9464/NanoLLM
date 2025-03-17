@@ -12,6 +12,7 @@ import os
 import json
 import regex as re
 import requests
+from typing import List, Tuple
 
 import torch
 
@@ -63,15 +64,15 @@ def get_pairs(word):
     return pairs
 
 class Encoder:
-
-    def __init__(self, encoder, bpe_merges):
+    def __init__(self, encoder:dict, bpe_merges:List[Tuple[str, str]]):
         # byte encoder/decoder
         self.byte_encoder = bytes_to_unicode()
         self.byte_decoder = {v:k for k, v in self.byte_encoder.items()}
         # bpe token encoder/decoder
-        self.encoder = encoder
+        self.encoder = encoder  # {'token': id}
         self.decoder = {v:k for k,v in self.encoder.items()}
         # bpe merge list that defines the bpe "tree", of tuples (a,b) that are to merge to token ab
+        # {('Ġ', 't'):0, ..., ('Ġinform', 'ants'): 49998, ('Ġg', 'azed'): 49999}
         self.bpe_ranks = dict(zip(bpe_merges, range(len(bpe_merges))))
         # the splitting pattern used for pre-tokenization
         # Should haved added re.IGNORECASE so BPE merges can happen for capitalized versions of contractions <-- original openai comment
@@ -95,38 +96,57 @@ class Encoder:
         self.pat = re.compile(r"""'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+""")
         self.cache = {}
 
-    def bpe(self, token):
+    def bpe(self, token:str):
         """
         this function uses self.bpe_ranks to iteratively merge all the possible bpe tokens
         up the tree. token is a string of one individual 'word' (after regex tokenization)
         and after byte encoding, e.g. 'Ġthere'.
+
+        For example:
+        
+        Input: "hello"
+        BPE merge rules (self.bpe_ranks) is:
+        {('l', 'l'): 0, ('he', 'l'): 1, ('hell', 'o'): 2}
+
+        This means:
+            "ll" should be merged first.
+            "he" and "l" should be merged next.
+            "hell" and "o" should be merged last.
+
+        iter1:
+        ('h', 'e', 'l', 'l', 'o') -> ('h', 'e', 'll', 'o') -> new bigrams {('h', 'e'), ('e', 'll'), ('ll', 'o')}
+
+        iter2:
+        ('h', 'e', 'll', 'o') -> ('hel', 'll', 'o')-> new bigrams {('hel', 'll'), ('ll', 'o')}
+
+        iter3:
+        ('hel', 'll', 'o') → ('hello',)
+
         """
         # token is a string of one individual 'word', after byte encoding, e.g. 'Ġthere'
-
         # memoization, for efficiency
         if token in self.cache:
             return self.cache[token]
-
+        # 'hello' -> ('h', 'e', 'l', 'l', 'o')
         word = tuple(token) # individual characters that make up the token, in a tuple
+        print(word)
+        # ('h', 'e', 'l', 'l', 'o') -> {('e', 'l'), ('l', 'l'), ('l', 'o'), ('h', 'e')}
         pairs = get_pairs(word) # get all bigrams
-
+        print(pairs)
         if not pairs:
             return token
-
         while True:
-
             # find the next lowest rank bigram that can be merged
             bigram = min(pairs, key = lambda pair: self.bpe_ranks.get(pair, float('inf')))
+            print('min bigram:', bigram, pairs)
             if bigram not in self.bpe_ranks:
                 break # no more bigrams are eligible to be merged
             first, second = bigram
-
             # we will now replace all occurences of (first, second) in the list of current
             # words into one merged token first_second, in the output list new_words
             new_word = []
             i = 0
             while i < len(word):
-
                 # find the next occurence of first in the sequence of current words
                 try:
                     j = word.index(first, i)
@@ -135,7 +155,6 @@ class Encoder:
                 except:
                     new_word.extend(word[i:])
                     break
-
                 # if this occurence is also followed by second, then merge them into one
                 if word[i] == first and i < len(word)-1 and word[i+1] == second:
                     new_word.append(first+second)
@@ -143,7 +162,7 @@ class Encoder:
                 else:
                     new_word.append(word[i])
                     i += 1
-
+                print('new_word:', new_word)
             # all occurences of (first, second) have been merged to first_second
             new_word = tuple(new_word)
             word = new_word
@@ -151,12 +170,11 @@ class Encoder:
                 break
             else:
                 pairs = get_pairs(word)
-
+            print('pairs:', pairs)
         # concat all words into a string, and use ' ' as the separator. Note that
         # by now all characters have been byte encoded, guaranteeing that ' ' is
         # not used in the actual data and is a 'special' delimiter character
         word = ' '.join(word)
-
         # cache the result and return
         self.cache[token] = word
         return word
@@ -237,7 +255,8 @@ def get_encoder():
     encoder_remote_file = 'https://openaipublic.blob.core.windows.net/gpt-2/models/124M/encoder.json'
     get_file(encoder_local_file, encoder_remote_file)
     with open(encoder_local_file, 'r') as f:
-        encoder = json.load(f)
+        encoder:dict = json.load(f)
+    # encoder:dict = {'!':0, '"':1, '#':2, ..., '<|endoftext|>': 50256}
     assert len(encoder) == 50257 # 256 individual byte tokens, 50,000 merged tokens, and 1 special <|endoftext|> token
 
     # load vocab.bpe that contains the bpe merges, i.e. the bpe tree structure
@@ -248,6 +267,7 @@ def get_encoder():
     with open(vocab_local_file, 'r', encoding="utf-8") as f:
         bpe_data = f.read()
     # light postprocessing: strip the version on first line and the last line is a blank
+    # bpe_data.split('\n') = ['#version: 0.2', 'Ġ t', 'Ġ a', ..., ('Ġinform', 'ants'), ('Ġg', 'azed'), '']
     bpe_merges = [tuple(merge_str.split()) for merge_str in bpe_data.split('\n')[1:-1]]
     assert len(bpe_merges) == 50000 # 50,000 merged tokens
 
