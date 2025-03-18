@@ -9,3 +9,20 @@
   provided by third-party libraries.
 * This is not only a full-stage open-source reproduction of a large language model but also a tutorial for beginners in
   LLM.
+
+## 1. build BPE tokenizer
+```bash
+uv run train_tokenizer.py
+```
+## 2. pre-train
+```bash
+uv run train_pretrain.py --use_wandb
+```
+## 3. instruction fine-tune
+```bash
+uv run train_full_sft.py --use_wandb
+```
+## 4. evaluate fine-tuned model
+```bash
+uv run eval_model.py --model 1
+```

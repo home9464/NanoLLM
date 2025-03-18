@@ -95,7 +95,8 @@ def train_epoch(epoch, wandb):
 
 
 def init_model(lm_config):
-    tokenizer = AutoTokenizer.from_pretrained('./model/nanollm_tokenizer')
+    # tokenizer = AutoTokenizer.from_pretrained('./model/nanollm_tokenizer')
+    tokenizer = AutoTokenizer.from_pretrained('./model/nano_tokenizer')
     model = MiniMindLM(lm_config).to(args.device)
     Logger(f'LLM parameters: {sum(p.numel() for p in model.parameters() if p.requires_grad) / 1e6:.3f} million')
     return model, tokenizer

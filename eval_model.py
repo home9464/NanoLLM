@@ -13,7 +13,7 @@ warnings.filterwarnings('ignore')
 
 
 def init_model(args):
-    tokenizer = AutoTokenizer.from_pretrained('./model/nanollm_tokenizer')
+    tokenizer = AutoTokenizer.from_pretrained('./model/nano_tokenizer')
     if args.load == 0:
         moe_path = '_moe' if args.use_moe else ''
         modes = {0: 'pretrain', 1: 'full_sft', 2: 'rlhf', 3: 'reason'}
@@ -22,7 +22,8 @@ def init_model(args):
         model = MiniMindLM(LMConfig(
             dim=args.dim,
             n_layers=args.n_layers,
-            max_seq_len=args.max_seq_len,
+            #max_seq_len=args.max_seq_len,
+            max_seq_len=256,
             use_moe=args.use_moe
         ))
 
@@ -76,6 +77,9 @@ def setup_seed(seed):
 
 
 def main():
+    """
+    uv run eval_model.py --model 0
+    """
     parser = argparse.ArgumentParser(description="Chat with NanoLLM")
     parser.add_argument('--lora_name', default='None', type=str)
     parser.add_argument('--out_dir', default='out', type=str)
