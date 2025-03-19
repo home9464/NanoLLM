@@ -118,7 +118,8 @@ def init_distributed_mode():
 # torchrun --nproc_per_node 2 train-pretrain.py
 
 if __name__ == "__main__":
-    """uv run train_pretrain.py --use_wandb
+    """
+    uv run train_pretrain.py --use_wandb  # it will take 25258min to finish
     uv run eval_model.py --model 0
     """
     parser = argparse.ArgumentParser(description="NanoLLM Pretraining")
@@ -143,8 +144,7 @@ if __name__ == "__main__":
     parser.add_argument('--max_seq_len', default=512, type=int)
     parser.add_argument('--use_moe', default=False, type=bool)
     #parser.add_argument("--data_path", type=str, default="./dataset/pretrain_hq.jsonl")
-    #parser.add_argument("--data_path", type=str, default="./dataset/pretrain_100.jsonl")
-    parser.add_argument("--data_path", type=str, default="./dataset/openwebtext-10k.jsonl")
+    parser.add_argument("--data_path", type=str, default="./dataset/openwebtext-1M-512.jsonl")
     args = parser.parse_args()
     print(args)
 
