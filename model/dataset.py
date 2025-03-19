@@ -54,6 +54,29 @@ class PretrainDataset(Dataset):
 
 
 class SFTDataset(Dataset):
+    '''use this example QA dataset
+    https://huggingface.co/datasets/databricks/databricks-dolly-15k/blob/main/databricks-dolly-15k.jsonl
+
+    examples:
+    {
+        "instruction": "When did Virgin Australia start operating?", 
+        "context": "Virgin Australia...", 
+        "response": "Virgin Australia ...",
+        "category": "closed_qa"
+    }
+
+    {"instruction": "Which is a species of fish? Tope or Rope", 
+    "context": "", 
+    "response": "Tope", 
+    "category": "classification"}
+
+    {"instruction": "what\u2019s the name of the third daughter?", 
+    "context": "", 
+    "response": "The name of the third daughter is Alice", 
+    "category": "open_qa"}
+
+
+    '''
     def __init__(self, jsonl_path, tokenizer, max_length=1024):
         super().__init__()
         self.tokenizer = tokenizer
@@ -74,8 +97,7 @@ class SFTDataset(Dataset):
         loss_mask = self._generate_loss_mask(input_ids)
         X = torch.tensor(input_ids[:-1], dtype=torch.long)
         Y = torch.tensor(input_ids[1:], dtype=torch.long)
-        loss_mask = torch.tensor(loss_mask[1:], dtype=torch.long)  # 对齐预测位置
-
+        loss_mask = torch.tensor(loss_mask[1:], dtype=torch.long)
         return X, Y, loss_mask
 
     def load_data(self, path):
